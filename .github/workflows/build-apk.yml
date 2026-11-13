@@ -28,16 +28,44 @@ jobs:
 
       - name: Create dummy google-services.json
         run: |
-          echo '{"project_info":{"project_number":"000000000000","project_id":"dummy","storage_bucket":"://appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:000000000000:android:0000000000000000","android_client_info":{"package_name":"com.pocketpalai"}},"api_key":[{"current_key":"AIzaSyDummyKeyForBuildOnly1234567890"}]}]}' > android/app/google-services.json
+          cat << 'EOF' > android/app/google-services.json
+          {
+            "project_info": {
+              "project_number": "000000000000",
+              "project_id": "dummy",
+              "storage_bucket": "://appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
+                  "android_client_info": {
+                    "package_name": "com.pocketpalai"
+                  }
+                },
+                "api_key": [{"current_key": "AIzaSyDummyKeyForBuildOnly1234567890"}]
+              },
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:000000000000:android:0000000000000001",
+                  "android_client_info": {
+                    "package_name": "com.pocketpalai.e2e"
+                  }
+                },
+                "api_key": [{"current_key": "AIzaSyDummyKeyForBuildOnly1234567890"}]
+              }
+            ]
+          }
+          EOF
 
-      - name: Build Debug APK
+      - name: Build Prod Debug APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleProdDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: PocketPal-Plus-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/prod/debug/*.apk
